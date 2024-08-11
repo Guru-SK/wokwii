@@ -1,0 +1,58 @@
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+
+#define OLED_RESET    -1
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+const int VRxPin = 34;
+const int VRyPin = 35;
+const int SWPin = 32;
+
+void setup() {
+  pinMode(VRxPin, INPUT);
+  pinMode(VRyPin, INPUT);
+  pinMode(SWPin, INPUT_PULLUP);
+
+  Serial.begin(115200);
+
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;);
+  }
+
+  display.display();
+  delay(2000);
+  display.clearDisplay();
+}
+
+void loop() {
+  int VRxValue = analogRead(VRxPin);
+  int VRyValue = analogRead(VRyPin);
+  int SWState = digitalRead(SWPin);
+
+  display.clearDisplay();
+
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.print("Joystick Readings");
+
+  display.setCursor(0, 20);
+  display.print("VRx: ");
+  display.print(VRxValue);
+
+  display.setCursor(0, 30);
+  display.print("VRy: ");
+  display.print(VRyValue);
+
+  display.setCursor(0, 40);
+  display.print("SW: ");
+  display.print(SWState == LOW ? "Pressed" : "Released");
+
+  display.display();
+
+  delay(100);
+}
